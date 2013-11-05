@@ -1,0 +1,1477 @@
+/**
+ * A class that contains all necessary functions to search through any number of 'Card' objects to determine
+ * the existence of every type of possible poker hand. Also contains methods for comparing any two poker
+ * hands to see which is better.
+ * @author Philip Maslow
+ *Copyright 2013 All rights reserved.
+ */
+public class GameLogic {
+	
+	/**
+	 * Default constructor, with no class variables needing to be initialized.
+	 */
+	public GameLogic(){
+		
+	}
+	
+	/**
+	 * Reads in an ArrayList of type Card and sorts the given Card objects from low to high value
+	 * then determines what the lowest card in the set is that does not break up any pairs, triples,
+	 * or quadruples that may exist in the ArrayList.
+	 * @param cardList The cards to iterate through in search for the lowest one.
+	 * @return the lowest valued 'Card' object in terms of number value and suit value
+	 */
+	public Card getLowestSingle(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		
+		if(cardList.size() > 1){
+			
+			for (int i = 0; i < sortedList.size() - 1; i++){
+				
+				int count = 0;
+				
+				for (int ii = i + 1; ii < sortedList.size(); ii++){
+					
+					if(sortedList.get(i).getNum() == sortedList.get(ii).getNum()){
+						
+						count++;
+					}
+					
+					if(i != 0){
+						if(sortedList.get(i).getNum() == sortedList.get(i-1).getNum()){
+							
+							count++;
+						}
+					}
+				}
+				
+				if(count == 0){
+					
+					return sortedList.get(i);
+				}
+			}
+		}else{
+			
+			return sortedList.get(0);
+		}
+		
+		
+		
+		return null;
+	}
+	
+	/**
+	 * Reads in an ArrayList of type Card and sorts the given Card objects from low to high value
+	 * then determines what the lowest card in the set regardless of  whether or not it breaks up
+	 * any doubles, triples, or quadruples that may exist in the ArrayList.
+	 * @param cardList The cards to iterate through in search for the lowest one.
+	 * @return the lowest valued 'Card' object in terms of number value and suit value
+	 */
+	public Card getLowestSingleRegardless(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		int lowestIndex = 0;
+		
+		if(sortedList.size() == 3){
+			
+			if(sortedList.get(0).getNum() == sortedList.get(1).getNum() && sortedList.get(0).getNum() == sortedList.get(2).getNum()){
+				
+				for(int i = 0; i < 3; i++){
+					
+					if (sortedList.get(i).getSuit() < sortedList.get(lowestIndex).getSuit()){
+						
+						lowestIndex = i;
+					}
+				}
+				
+				return sortedList.get(lowestIndex);
+			} else if (sortedList.get(0).getNum() == sortedList.get(1).getNum()){
+				
+				if(sortedList.get(lowestIndex).getSuit() < sortedList.get(1).getSuit()){
+					
+					return sortedList.get(1);
+				}else{
+					return sortedList.get(lowestIndex);
+				}
+			}else{
+				return sortedList.get(lowestIndex);
+			}
+		}else if(sortedList.size() == 2){
+			
+			if (sortedList.get(0).getNum() == sortedList.get(1).getNum()){
+				
+				if(sortedList.get(lowestIndex).getSuit() < sortedList.get(1).getSuit()){
+					
+					return sortedList.get(1);
+				}else{
+					return sortedList.get(lowestIndex);
+				}
+			}else{
+				return sortedList.get(lowestIndex);
+			}
+		}else if(sortedList.size() == 1){
+			
+			return sortedList.get(lowestIndex);
+		}else{
+			
+			if (sortedList.get(0).getNum() == sortedList.get(1).getNum() && sortedList.get(0).getNum() == sortedList.get(2).getNum() && sortedList.get(0).getNum() == sortedList.get(3).getNum()){
+				
+				for(int i = 0; i < 4; i++){
+					
+					if (sortedList.get(i).getSuit() < sortedList.get(lowestIndex).getSuit()){
+						
+						lowestIndex = i;
+					}
+				}
+				
+				return sortedList.get(lowestIndex);
+			}else if (sortedList.get(0).getNum() == sortedList.get(1).getNum() && sortedList.get(0).getNum() == sortedList.get(2).getNum()){
+				
+				for(int i = 0; i < 3; i++){
+					
+					if (sortedList.get(i).getSuit() < sortedList.get(lowestIndex).getSuit()){
+						
+						lowestIndex = i;
+					}
+				}
+				
+				return sortedList.get(lowestIndex);
+			}else if (sortedList.get(0).getNum() == sortedList.get(1).getNum()){
+				
+				if(sortedList.get(lowestIndex).getSuit() < sortedList.get(1).getSuit()){
+					
+					return sortedList.get(1);
+				}else{
+					return sortedList.get(lowestIndex);
+				}
+			}else{
+				return sortedList.get(lowestIndex);
+			}
+		}
+		
+		
+	}
+	
+	/**
+	 * Confirms via a boolean result if there is at least one pair in the ArrayList of 'Card's
+	 * @param cardList The ArrayList of Card objects to search for a possible pair
+	 * @return True if there is at least one pair, false if there is none.
+	 */
+	public boolean hasPair(ArrayList<Card> cardList){
+		
+		if(cardList.size() > 1){
+			for(int i = 0; i < cardList.size() - 1; i++){
+				for(int ii = i+1; ii < cardList.size(); ii++){
+					if(cardList.get(i).getNum() == cardList.get(ii).getNum()){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Iterates through an ArrayList of type Card and creates a new ArrayList of type Card containing
+	 * the lowest pair there is that does not break up any triples or quadruples that may be in the
+	 * ArrayList.
+	 * @param cardList The ArrayList of 'Card' objects to iterate through in search of the lowest pair
+	 * @return The lowest pair in the given ArrayList or else Null if there is no pairs
+	 */
+	public ArrayList<Card> getLowestPair(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		
+		sortedList.addAll(sort(cardList));
+		
+		for(int i = 0; i < sortedList.size() - 1; i++){
+			
+			int count = 1;
+			int location = 0;
+			
+			for(int ii = i+1; ii < sortedList.size(); ii++){
+				
+				if(sortedList.get(i).getNum() == sortedList.get(ii).getNum()){
+					
+					count++;
+					location = ii;
+				}
+			}
+			
+			if (count == 2){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				
+				returnList.add(sortedList.get(i));
+				returnList.add(sortedList.get(location));
+				
+				return returnList;
+			}else if(count > 2){
+				
+				i = location;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Iterates through an ArrayList of type Card and creates a new ArrayList of type Card containing
+	 * the lowest pair there regardless of whether or not it breaks up any triples or quadruples that
+	 * may be in the ArrayList.
+	 * @param cardList The ArrayList of 'Card' objects to iterate through in search of the lowest pair
+	 * @return The lowest pair in the given ArrayList or else Null if there is no pairs
+	 */
+	public ArrayList<Card> getLowestPairRegardless(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		
+		sortedList.addAll(sort(cardList));
+		
+		for(int i = 0; i < sortedList.size() - 1; i++){
+			
+			for(int ii = i+1; ii < sortedList.size(); ii++){
+				
+				if(sortedList.get(i).getNum() == sortedList.get(ii).getNum()){
+					
+					ArrayList<Card> returnList = new ArrayList<Card>();
+					
+					returnList.add(sortedList.get(i));
+					returnList.add(sortedList.get(ii));
+					
+					return returnList;
+				}
+			}
+				
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Confirms via a boolean result if there is at least one triple in the given ArrayList of type Card
+	 * @param cardList The ArrayList of type Card to search for a possible triple.
+	 * @return True if there is at least one triple in the ArrayList or false if there is none.
+	 */
+	public boolean hasTriple(ArrayList<Card> cardList){
+		
+		if(cardList.size() > 2){
+			
+			for(int i = 0; i < cardList.size() - 2; i++){
+				
+				for(int ii = i + 1; ii < cardList.size() - 1; ii++){
+					
+					for(int iii = ii + 1; iii < cardList.size(); iii++){
+						
+						if(cardList.get(i).getNum() == cardList.get(ii).getNum() && cardList.get(i).getNum() == cardList.get(iii).getNum()){
+							
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+		
+	}
+
+	/**
+	 * Iterates through an ArrayList of type Card and returns the lowest triple that does not break up
+	 * any quadruples that may exist in the ArrayList.
+	 * @param cardList The ArrayList of type Card to search through for a triple.
+	 * @return The lowest triple in the ArrayList or Null if there is none.
+	 */
+	public ArrayList<Card> getLowestTriple(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		int location = 0;
+		
+		
+		for(int i = 0; i < cardList.size() - 1; i++){
+			
+			int count = 1;
+			
+			for(int ii = i + 1; ii < cardList.size(); ii++){
+				
+				if(sortedList.get(i).getNum() == sortedList.get(ii).getNum()){
+					
+					count++;
+					location = ii;
+				}
+			}
+			
+			if (count == 3){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				
+				returnList.add(sortedList.get(i));
+				returnList.add(sortedList.get(location - 1));
+				returnList.add(sortedList.get(location));
+				
+				return returnList;
+			}else if(count > 3){
+				
+				i = location;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Iterates through an ArrayList of type Card and returns the lowest triple regardless of whether 
+	 * or not it breaks up any quadruples that may exist in the ArrayList.
+	 * @param cardList The ArrayList of type Card to search through for a triple.
+	 * @return The lowest triple in the ArrayList or Null if there is none.
+	 */
+	public ArrayList<Card> getLowestTripleRegardless(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		
+		for(int i = 0; i < sortedList.size() - 2; i++){
+			
+			for(int ii = i + 1; ii < sortedList.size() - 1; ii++){
+				
+				for(int iii = ii + 1; iii < sortedList.size(); iii++){
+					
+					if(sortedList.get(i).getNum() == sortedList.get(ii).getNum() && sortedList.get(i).getNum() == sortedList.get(iii).getNum()){
+						
+						ArrayList<Card> returnList = new ArrayList<Card>();
+						returnList.add(sortedList.get(i));
+						returnList.add(sortedList.get(ii));
+						returnList.add(sortedList.get(iii));
+						
+						return returnList;
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public boolean hasQuad(ArrayList<Card> cardList){
+		
+		if(cardList.size() > 3){
+			
+			for(int i = 0; i < cardList.size() - 3; i++){
+				
+				for(int ii = i + 1; ii < cardList.size() - 2; ii++){
+					
+					for(int iii = ii + 1; iii < cardList.size() - 1; iii++){
+						
+						for(int iiii = iii + 1; iiii < cardList.size(); iiii++){
+							
+							if(cardList.get(i).getNum() == cardList.get(ii).getNum() && cardList.get(i).getNum() == cardList.get(iii).getNum() && cardList.get(i).getNum() == cardList.get(iiii).getNum()){
+								
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Confirms via a boolean result whether or not the given ArrayList of type Card contains at least
+	 * one quadruple.
+	 * @param cardList The ArrayList of type Card to search through.
+	 * @return True if the ArrayList contains a quadruple and false if not.
+	 */
+	public ArrayList<Card> getLowestQuad(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		int location = 0;
+		
+		for(int i = 0; i < cardList.size() - 1; i++){
+			
+			int count = 1;
+			
+			for(int ii = i + 1; ii < cardList.size() ; ii++){
+				
+				if(sortedList.get(i).getNum() == sortedList.get(ii).getNum()){
+					
+					count++;
+					location = ii;
+				}
+			}
+			
+			if (count == 4){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				
+				returnList.add(sortedList.get(i));
+				returnList.add(sortedList.get(location - 2));
+				returnList.add(sortedList.get(location - 1));
+				returnList.add(sortedList.get(location));
+				
+				return returnList;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Confirms via a boolean result whether or not the given ArrayList of type Card contains at least one
+	 * 'Straight'.
+	 * @param cardList The ArrayList of type Card to search through for a 'Straight'.
+	 * @return True if the ArrayList contains a straight, otherwise false.
+	 */
+	public boolean hasStraight(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		if(sortedList.size() > 4){
+			
+			
+			
+			for(Card val : sortedList){
+				
+				
+				boolean foundB = false;
+				boolean foundC = false;
+				boolean foundD = false;
+				boolean foundE = false;
+				
+				int a = sortedList.indexOf(val);
+				
+				
+				for(int i = 0; i < sortedList.size(); i++){
+					
+					if(!foundB && sortedList.get(i).getNum() - 1 == sortedList.get(a).getNum()){
+						
+						foundB = true;
+						//b = i;
+					}
+					
+					if(!foundC && sortedList.get(i).getNum() - 2 == sortedList.get(a).getNum()){
+						
+						foundC = true;
+						//c = i;
+					}
+					
+					if(!foundD && sortedList.get(i).getNum() - 3 == sortedList.get(a).getNum()){
+						
+						foundD = true;
+						//d = i;
+					}
+					
+					if(!foundE && sortedList.get(i).getNum() - 4 == sortedList.get(a).getNum() && sortedList.get(i).getNum() != 15){
+						
+						foundE = true;
+						//e = i;
+					}
+				}
+				
+				if(foundB && foundC && foundD && foundE){
+					
+					return true;
+				}else{
+					
+					foundB = false;
+					foundC = false;
+					foundD = false;
+					foundE = false;
+				}
+			}
+			
+			boolean foundA = false;
+			boolean foundB = false;
+			boolean foundC = false;
+			boolean foundD = false;
+			boolean foundE = false;
+			
+			for(Card val : sortedList){
+				
+				
+				
+				if(!foundA && val.getNum() == 15){
+					
+					foundA = true;
+				}
+				
+				if(!foundB && val.getNum() == 3){
+					
+					foundB = true;
+				}
+				
+				if(!foundC && val.getNum() == 4){
+					
+					foundC = true;
+				}
+				
+				if(!foundD && val.getNum() == 5){
+					
+					foundD = true;
+				}
+				
+				if(!foundE && val.getNum() == 6){
+					
+					foundE= true;
+				}
+				
+				if(foundA && foundB && foundC && foundD && foundE){
+					
+					return true;
+				}
+			}
+			
+			foundA = false;
+			foundB = false;
+			foundC = false;
+			foundD = false;
+			foundE = false;
+			
+			for(Card val : sortedList){
+				
+				
+				
+				if(!foundA && val.getNum() == 14){
+					
+					foundA = true;
+				}
+				
+				if(!foundB && val.getNum() == 15){
+					
+					foundB = true;
+				}
+				
+				if(!foundC && val.getNum() == 3){
+					
+					foundC = true;
+				}
+				
+				if(!foundD && val.getNum() == 4){
+					
+					foundD = true;
+				}
+				
+				if(!foundE && val.getNum() == 5){
+					
+					foundE= true;
+				}
+				
+				if(foundA && foundB && foundC && foundD && foundE){
+					
+					return true;
+				}
+			}
+			
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Retrieves the lowest possible 'straight' contained within the ArrayList of type Card and returns it
+	 * in the form of a new ArrayList.
+	 * @param cardList The ArrayList of type Card to search through for the lowest 'straight'
+	 * @return An ArrayList containing the lowest possible 'straight' or null if there is none.
+	 */
+	public ArrayList<Card> getLowestStraight(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		if(sortedList.size() > 4){
+			
+			
+			
+			for(Card val : sortedList){
+				
+				
+				boolean foundB = false;
+				boolean foundC = false;
+				boolean foundD = false;
+				boolean foundE = false;
+				
+				int a = sortedList.indexOf(val);
+				int b = 0;
+				int c = 0;
+				int d = 0;
+				int e = 0;
+				
+				for(int i = 0; i < sortedList.size(); i++){
+					
+					if(!foundB && sortedList.get(i).getNum() - 1 == sortedList.get(a).getNum()){
+						
+						foundB = true;
+						b = i;
+					}
+					
+					if(!foundC && sortedList.get(i).getNum() - 2 == sortedList.get(a).getNum()){
+						
+						foundC = true;
+						c = i;
+					}
+					
+					if(!foundD && sortedList.get(i).getNum() - 3 == sortedList.get(a).getNum()){
+						
+						foundD = true;
+						d = i;
+					}
+					
+					if(!foundE && sortedList.get(i).getNum() - 4 == sortedList.get(a).getNum() && sortedList.get(i).getNum() != 15){
+						
+						foundE = true;
+						e = i;
+					}
+				}
+				
+				if(foundB && foundC && foundD && foundE){
+					
+					ArrayList<Card> returnList = new ArrayList<Card>();
+					returnList.add(sortedList.get(a));
+					returnList.add(sortedList.get(b));
+					returnList.add(sortedList.get(c));
+					returnList.add(sortedList.get(d));
+					returnList.add(sortedList.get(e));
+					
+					return returnList;
+				}else{
+					
+					foundB = false;
+					foundC = false;
+					foundD = false;
+					foundE = false;
+				}
+			}
+			
+			boolean foundA = false;
+			boolean foundB = false;
+			boolean foundC = false;
+			boolean foundD = false;
+			boolean foundE = false;
+			int a = 0;
+			int b = 0;
+			int c = 0;
+			int d = 0;
+			int e = 0;
+			
+			for(Card val : sortedList){
+				
+				
+				
+				if(!foundA && val.getNum() == 15){
+					
+					foundA = true;
+					a = sortedList.indexOf(val);
+				}
+				
+				if(!foundB && val.getNum() == 3){
+					
+					foundB = true;
+					b = sortedList.indexOf(val);
+				}
+				
+				if(!foundC && val.getNum() == 4){
+					
+					foundC = true;
+					c = sortedList.indexOf(val);
+				}
+				
+				if(!foundD && val.getNum() == 5){
+					
+					foundD = true;
+					d = sortedList.indexOf(val);
+				}
+				
+				if(!foundE && val.getNum() == 6){
+					
+					foundE= true;
+					e = sortedList.indexOf(val);
+				}
+				
+				if(foundA && foundB && foundC && foundD && foundE){
+					
+					ArrayList<Card> returnList = new ArrayList<Card>();
+					returnList.add(sortedList.get(a));
+					returnList.add(sortedList.get(b));
+					returnList.add(sortedList.get(c));
+					returnList.add(sortedList.get(d));
+					returnList.add(sortedList.get(e));
+					
+					return returnList;
+				}
+			}
+			
+			foundA = false;
+			foundB = false;
+			foundC = false;
+			foundD = false;
+			foundE = false;
+			
+			for(Card val : sortedList){
+				
+				
+				
+				if(!foundA && val.getNum() == 14){
+					
+					foundA = true;
+					a = sortedList.indexOf(val);
+				}
+				
+				if(!foundB && val.getNum() == 15){
+					
+					foundB = true;
+					b = sortedList.indexOf(val);
+				}
+				
+				if(!foundC && val.getNum() == 3){
+					
+					foundC = true;
+					c = sortedList.indexOf(val);
+				}
+				
+				if(!foundD && val.getNum() == 4){
+					
+					foundD = true;
+					d = sortedList.indexOf(val);
+				}
+				
+				if(!foundE && val.getNum() == 5){
+					
+					foundE= true;
+					e = sortedList.indexOf(val);
+				}
+				
+				if(foundA && foundB && foundC && foundD && foundE){
+					
+					ArrayList<Card> returnList = new ArrayList<Card>();
+					returnList.add(sortedList.get(a));
+					returnList.add(sortedList.get(b));
+					returnList.add(sortedList.get(c));
+					returnList.add(sortedList.get(d));
+					returnList.add(sortedList.get(e));
+					
+					return returnList;
+				}
+			}
+			
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Confirms via a boolean result if the given ArrayList of type Card contains at least one 'flush'.
+	 * @param cardList The ArrayList of type Card to search through for a 'flush'.
+	 * @return True if the ArrayList contains a 'flush', otherwise false.
+	 */
+	public boolean hasFlush(ArrayList<Card> cardList){
+		
+		int countA = 0;
+		int countB = 0;
+		int countC = 0;
+		int countD = 0;
+		
+		for(Card val : cardList){
+			
+			if(val.getSuit() == 1){
+				
+				countA++;
+			}else if(val.getSuit() == 2){
+				
+				countB++;
+			}else if(val.getSuit() == 3){
+				
+				countC++;
+			}else if(val.getSuit() == 4){
+				
+				countD++;
+			}
+			
+			if(countA == 5 || countB == 5 || countC == 5 || countD == 5){
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Retrieves the lowest possible 'flush' contained within the ArrayList of type Card and returns it in
+	 * the form of a new ArrayList.
+	 * @param cardList The ArrayList of type Card to search through for a 'flush'.
+	 * @return An ArrayList containing the lowest 'flush' or null if there is none.
+	 */
+	public ArrayList<Card> getLowestFlush(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		
+		if(sortedList.size() > 4){
+			
+			int[] indexs = new int[5];
+			int count = 0;
+			for(Card val : sortedList){
+				
+				if(val.getSuit() == 1 && count < 5){
+					
+					indexs[count] = sortedList.indexOf(val);
+					count++;
+					
+				}
+			}
+			
+			if(count == 5){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				returnList.add(sortedList.get(indexs[0]));
+				returnList.add(sortedList.get(indexs[1]));
+				returnList.add(sortedList.get(indexs[2]));
+				returnList.add(sortedList.get(indexs[3]));
+				returnList.add(sortedList.get(indexs[4]));
+				
+				return returnList;
+			}else {
+				
+				count = 0;
+			}
+			
+			for(Card val : sortedList){
+				
+				if(val.getSuit() == 2 && count < 5){
+					
+					indexs[count] = sortedList.indexOf(val);
+					count++;
+					
+				}
+			}
+			
+			if(count == 5){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				returnList.add(sortedList.get(indexs[0]));
+				returnList.add(sortedList.get(indexs[1]));
+				returnList.add(sortedList.get(indexs[2]));
+				returnList.add(sortedList.get(indexs[3]));
+				returnList.add(sortedList.get(indexs[4]));
+				
+				return returnList;
+			}else {
+				
+				count = 0;
+			}
+			
+			for(Card val : sortedList){
+				
+				if(val.getSuit() == 3 && count < 5){
+					
+					indexs[count] = sortedList.indexOf(val);
+					count++;
+					
+				}
+			}
+			
+			if(count == 5){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				returnList.add(sortedList.get(indexs[0]));
+				returnList.add(sortedList.get(indexs[1]));
+				returnList.add(sortedList.get(indexs[2]));
+				returnList.add(sortedList.get(indexs[3]));
+				returnList.add(sortedList.get(indexs[4]));
+				
+				return returnList;
+			}else {
+				
+				count = 0;
+			}
+			
+			for(Card val : sortedList){
+				
+				if(val.getSuit() == 4 && count < 5){
+					
+					indexs[count] = sortedList.indexOf(val);
+					count++;
+					
+				}
+			}
+			
+			if(count == 5){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				returnList.add(sortedList.get(indexs[0]));
+				returnList.add(sortedList.get(indexs[1]));
+				returnList.add(sortedList.get(indexs[2]));
+				returnList.add(sortedList.get(indexs[3]));
+				returnList.add(sortedList.get(indexs[4]));
+				
+				return returnList;
+			}else {
+				
+				count = 0;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Confirms via a boolean result whether or not the given ArrayList of type Card contains at least one
+	 * 'full house'.
+	 * @param cardList The ArrayList of type Card to search through for a possible 'full house'.
+	 * @return True if the ArrayList contains a 'full house' otherwise false.
+	 */
+	public boolean hasFullHouse(ArrayList<Card> cardList){
+		
+		ArrayList<Card> temp = new ArrayList<Card>();
+		temp.addAll(cardList);
+		
+		if(temp.size() > 4){
+			
+			if(hasTriple(cardList)){
+				
+				temp.removeAll(getLowestTripleRegardless(cardList));
+				
+				if(hasPair(temp)){
+					
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Retrieves the lowest possible 'full house' in the given ArrayList of type Card and returns it in
+	 * the form of a new ArrayList.
+	 * @param cardList The ArrayList of type Card to search through for the lowest possible 'full house'.
+	 * @return A new ArrayList containing the lowest 'full house' or false if there is none.
+	 */
+	public ArrayList<Card> getLowestFullHouse(ArrayList<Card> cardList){
+		
+		ArrayList<Card> temp = new ArrayList<Card>();
+		temp.addAll(cardList);
+		ArrayList<Card> returnList = new ArrayList<Card>();
+		
+		if(temp.size() > 4){
+			
+			if(hasTriple(cardList)){
+				
+				if(getLowestTriple(cardList) != null){
+					
+					temp.removeAll(getLowestTriple(cardList));
+					returnList.addAll(getLowestTriple(cardList));
+				}else{
+					
+					temp.removeAll(getLowestTripleRegardless(cardList));
+					returnList.addAll(getLowestTripleRegardless(cardList));
+				}
+				
+				if(hasPair(temp)){
+					
+					if(getLowestPair(temp) != null){
+						
+						
+						returnList.addAll(getLowestPair(temp));
+					}else{
+						
+						returnList.addAll(getLowestPairRegardless(temp));
+					}
+				}
+				
+				return returnList;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Confirms via a boolean result if the given ArrayList of type Card contains at least one
+	 * 'four of a kind'.
+	 * @param cardList The ArrayList of type Card to search through for a 'four of a kind'.
+	 * @return True if the ArrayList contains a 'four of a kind' otherwise false.
+	 */
+	public boolean hasFourOfAKind(ArrayList<Card> cardList){
+		
+		if(cardList.size() > 4){
+			
+			if(hasQuad(cardList)){
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Retrieves the lowest possible 'four of a kind' contained within the given ArrayList of type
+	 * Card and returns it in the form of a new ArrayList.
+	 * @param cardList The given ArrayList of type Card to search through for a 'four of a kind'.
+	 * @return A new ArrayList containing the lowest possible 'four of a kind' or null if there is
+	 * none.
+	 */
+	public ArrayList<Card> getLowestFourOfAKind(ArrayList<Card> cardList){
+		
+		ArrayList<Card> temp = new ArrayList<Card>();
+		temp.addAll(cardList);
+		
+		if(cardList.size() > 4){
+			
+			if(hasQuad(temp)){
+				
+				ArrayList<Card> returnList = new ArrayList<Card>();
+				returnList.addAll(getLowestQuad(temp));
+				temp.removeAll(getLowestQuad(temp));
+				
+				if(getLowestSingle(temp) != null){
+					
+					returnList.add(getLowestSingle(temp));
+					return returnList;
+				}else if(getLowestSingleRegardless(temp) != null){
+					
+					returnList.add(getLowestSingleRegardless(temp));
+					return returnList;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Confirms via a boolean result whether or not the given ArrayList of type Card contains at least
+	 * one 'straight flush'.
+	 * @param cardList The ArrayList of type Card to search through for a 'straight flush'.
+	 * @return True if the ArrayList contains a 'straigh flush' otherwise false.
+	 */
+	public boolean hasStraightFlush(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		int suit1 = 0;
+		int suit2 = 0;
+		int suit3 = 0;
+		int suit4 = 0;
+		ArrayList<Card> suit1List = new ArrayList<Card>();
+		ArrayList<Card> suit2List = new ArrayList<Card>();
+		ArrayList<Card> suit3List = new ArrayList<Card>();
+		ArrayList<Card> suit4List = new ArrayList<Card>();
+
+		
+		for(Card val : sortedList){
+			
+			if(val.getSuit() == 1){
+				suit1++;
+				suit1List.add(val);
+			}else if(val.getSuit() == 2){
+				suit2++;
+				suit2List.add(val);
+			}else if(val.getSuit() == 3){
+				suit3++;
+				suit3List.add(val);
+			}else if(val.getSuit() == 4){
+				suit4++;
+				suit4List.add(val);
+			}
+			
+		}
+			if(suit1 > 4){
+				
+				if(hasStraight(suit1List)){
+					
+					return true;
+				}
+			}else if(suit2 > 4){
+				
+				if(hasStraight(suit2List)){
+					
+					return true;
+				}
+			}else if(suit3 > 4){
+				
+				if(hasStraight(suit3List)){
+					
+					return true;
+				}
+			}else if(suit4 > 4){
+				
+				if(hasStraight(suit4List)){
+					
+					return true;
+				}
+			}
+				
+				return false;
+			
+			
+		
+	}
+	
+	/**
+	 * Retrieves the lowest possible 'straight flush' from the given ArrayList of type Card and returns
+	 * it in the form of a new ArrayList.
+	 * @param cardList The given ArrayList of type Card to search through for a 'straight flush'
+	 * @return A new ArrayList containing the lowest 'straight flush' or null if there is none.
+	 */
+	public ArrayList<Card> getLowestStraightFlush(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		int suit1 = 0;
+		int suit2 = 0;
+		int suit3 = 0;
+		int suit4 = 0;
+		ArrayList<Card> suit1List = new ArrayList<Card>();
+		ArrayList<Card> suit2List = new ArrayList<Card>();
+		ArrayList<Card> suit3List = new ArrayList<Card>();
+		ArrayList<Card> suit4List = new ArrayList<Card>();
+
+		if (sortedList.size() > 4){
+			
+			for(Card val : sortedList){
+				
+				if(val.getSuit() == 1){
+					suit1++;
+					suit1List.add(val);
+				}else if(val.getSuit() == 2){
+					suit2++;
+					suit2List.add(val);
+				}else if(val.getSuit() == 3){
+					suit3++;
+					suit3List.add(val);
+				}else if(val.getSuit() == 4){
+					suit4++;
+					suit4List.add(val);
+				}
+				
+			}
+				if(suit1 > 4){
+					
+					if(hasStraight(suit1List)){
+						
+						return getLowestStraight(suit1List);
+					}
+				}else if(suit2 > 4){
+					
+					if(hasStraight(suit2List)){
+						
+						return getLowestStraight(suit2List);
+					}
+				}else if(suit3 > 4){
+					
+					if(hasStraight(suit3List)){
+						
+						return getLowestStraight(suit3List);
+					}
+				}else if(suit4 > 4){
+					
+					if(hasStraight(suit4List)){
+						
+						return getLowestStraight(suit1List);
+					}
+				}
+		}
+		
+				
+				return null;
+			
+			
+		
+	}
+	
+	/**
+	 * Confirms via a boolean result if the given ArrayList of type Card contains the 'start card' for
+	 * this particular game.
+	 * @param cardList The ArrayList of type card to search through for the 'start card'.
+	 * @return True if the ArrayList contains the 'start card' otherwise false.
+	 */
+	public boolean hasStartThree(ArrayList<Card> cardList){
+		
+		if(getLowestSingleRegardless(cardList).getNum() == 3 && getLowestSingleRegardless(cardList).getSuit() == 1){
+			Log.d("DEBUG Logic", "Has start 3");
+			return true;
+		}
+		Log.d("DEBUG Logic", "Does not have start 3");
+		return false;
+	}
+	
+	/**
+	 * Confirms via a boolean result whether or not the given ArrayList of type Card contains at least one
+	 * of the five kinds of possible five card hands.
+	 * @param cardList The ArrayList of type Card to search through for a possible five card hand.
+	 * @return True if the ArrayList contains a five card hand, otherwise false.
+	 */
+	public boolean hasFiveCardHand(ArrayList<Card> cardList){
+		
+		if(hasStraight(cardList) || hasFlush(cardList) || hasFullHouse(cardList) || hasFourOfAKind(cardList) || hasStraightFlush(cardList)){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Compares two ArrayLists of type Card to determine which contains the better hand and returns a
+	 * String value indicating such.
+	 * @param a The ArrayList of type Card to compare to ArrayList b.
+	 * @param b The ArrayList of type Card to compare to ArrayList a.
+	 * @return "a" if ArrayList a contains a better hand than ArrayList b, otherwise "b". 
+	 */
+	public String compareCards(ArrayList<Card> a, ArrayList<Card> b){
+		
+		if(a == null && b != null){
+			
+			return "b";
+		}else if(a != null && b == null){
+			
+			return "a";
+		}
+		if(a.size() == 1 && b.size() == 1){
+			
+			return compareCard(a.get(0), b.get(0));
+		}else if(a.size() == 2 && b.size() == 2){
+			
+			if(hasPair(a) && hasPair(b)){
+				
+				return compareCard(getHighestCard(a), getHighestCard(b));
+			}
+		}else if(a.size() == 3 && b.size() == 3){
+			
+			if(hasTriple(a) && hasTriple(b)){
+				
+				return compareCard(getHighestCard(a), getHighestCard(b));
+			}
+		}else if(a.size() == 5 && b.size() == 5){
+			
+			if(hasStraightFlush(a) && hasStraightFlush(b)){
+				
+				return compareCard(getHighestCard(a), getHighestCard(b));
+			}else if(hasStraightFlush(a) && !hasStraightFlush(b)){
+				
+				return "a";
+			}else if(!hasStraightFlush(a) && hasStraightFlush(b)){
+				
+				return "b";
+			}else if(hasFourOfAKind(a) && hasFourOfAKind(b)){
+				
+				return compareCard(getHighestCard(getLowestQuad(a)), getHighestCard(getLowestQuad(b)));
+			}else if(hasFourOfAKind(a) && !hasFourOfAKind(b)){
+				
+				return "a";
+			}else if(!hasFourOfAKind(a) && hasFourOfAKind(b)){
+				
+				return "b";
+			}else if (hasFullHouse(a) && hasFullHouse(b)){
+				
+				return compareCard(getHighestCard(getLowestTripleRegardless(a)), getHighestCard(getLowestTripleRegardless(b)));
+			}else if(hasFullHouse(a) && !hasFullHouse(b)){
+				
+				return "a";
+			}else if(!hasFullHouse(a) && hasFullHouse(b)){
+				
+				return "b";
+			}else if (hasFlush(a) && hasFlush(b)){
+				//need to write method to highest suit
+				return compareFlush(getHighestCard(a), getHighestCard(b));
+			}else if(hasFlush(a) && !hasFlush(b)){
+				
+				return "a";
+			}else if(!hasFlush(a) && hasFlush(b)){
+				
+				return "b";
+			}else if (hasStraight(a) && hasStraight(b)){
+				
+				if(compareSuits(a.get(0), b.get(0)).equals("c")){
+					
+					return(compareCard(getHighestCard(a), getHighestCard(b)));
+				}else{
+					
+					return compareSuits(a.get(0), b.get(0));
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Compares two objects of type Card to determine which is the higher 'card' an returns a String
+	 * value indicating such.
+	 * @param a The Card to compare to b.
+	 * @param b The Card to compare to a.
+	 * @return "a" if Card a is greater than card b, otherwise "b".
+	 */
+	private String compareCard(Card a, Card b){
+		if(a == null){
+			
+			return "b";
+		}else if(b == null){
+			
+			return "a";
+		}else if(a.getNum() == b.getNum()){
+			
+			if(a.getSuit() > b.getSuit()){
+				
+				return "a";
+			}else{
+				
+				return "b";
+			}
+		}else if(a.getNum() > b.getNum()){
+			
+			return "a";
+		}else{
+			
+			return "b";
+		}
+		
+	}
+	
+	/**
+	 * Compares two objects of type Card to determine which has the higher 'suit' value and returns a
+	 * String value indicating such.
+	 * @param a The Card to compare to b.
+	 * @param b The Card to compare to a.
+	 * @return "a" if Card a has a greater suit than Card b, "b" if Card b has a greater suit than Card a,
+	 * and "c" if both cards are of the same suit.
+	 */
+	private String compareSuits(Card a, Card b){
+		
+		if(a.getSuit() == b.getSuit()){
+			
+			return "c";
+		}else if (a.getSuit() == b.getSuit()){
+			
+			return "a";
+		}else{
+			
+			return "b";
+		}
+	}
+	
+	/**
+	 * Retrieves the highest value Card object from an ArrayList of type Card.
+	 * @param cardList The ArrayList of type Card to iterate through in search of the highest Card.
+	 * @return The highest valued Card object in the ArrayList, or null if the list is empty.
+	 */
+	private Card getHighestCard(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		sortedList.addAll(sort(cardList));
+		
+		Card high = sortedList.get(0);
+		
+		for(Card val : sortedList){
+			
+			if(compareCard(high, val).equals("b")){
+				high = val;
+			}
+		}
+		
+		return high;
+		
+	}
+	
+	/**
+	 * Compares the highest card from each of two separate 'flushes' to determine which 'flush' is 
+	 * better and returns a String value indicating such.
+	 * @param a The highest Card from the first 'flush'.
+	 * @param b The highest Card from the second 'flush'.
+	 * @return "a" if Card a is higher than Card b, otherwise "b".
+	 */
+	private String compareFlush(Card a, Card b){
+		
+		if(a.getSuit() == b.getSuit()){
+			
+			if(a.getNum() > b.getNum()){
+				
+				return "a";
+			}else{
+				
+				return "b";
+			}
+		}else if(a.getSuit() > b.getSuit()){
+			
+			return "a";
+		}else{
+			
+			return "b";
+		}
+		
+	}
+	
+	/**
+	 * Sorts an ArrayList of type Card from lowest to highest and returns a new ArrayList of the sorted
+	 * Card objects.
+	 * @param cardList the ArrayList of type Card to sort.
+	 * @return The sorted ArrayList of type Card from lowest to highest.
+	 */
+	private ArrayList<Card> sort(ArrayList<Card> cardList){
+		
+		ArrayList<Card> sortedList = new ArrayList<Card>();
+		ArrayList<Card> searchList = new ArrayList<Card>();
+		
+		searchList.addAll(cardList);
+		
+		while (searchList.size() != 0){
+			
+			int lowest = getLowestIndex(searchList);
+			sortedList.add(searchList.get(lowest));
+			searchList.remove(lowest);
+		}
+		
+		return sortedList;
+		
+	}
+	
+	/**
+	 * Determines the lowest valued Card object in an ArrayList of type Card and returns a int value
+	 * representing its index location in the ArrayList.
+	 * @param cardList The ArrayList of type Card to look through for the index location of its lowest
+	 * valued Card object.
+	 * @return The int value of the lowest valued Card object's index location in the ArrayList.
+	 */
+	private int getLowestIndex(ArrayList<Card> cardList){
+		
+		boolean found = false;
+		boolean tooBig = false;
+		int i = 0;
+		
+		while (!found && i != cardList.size() - 1){
+			
+			for(int ii = 0; ii < cardList.size(); ii++){
+				
+				if (i != ii && !tooBig){
+					
+					if (cardList.get(i).getNum() > cardList.get(ii).getNum()){
+						
+						tooBig = true;
+					}
+					
+				}
+			}
+			
+			if (!tooBig){
+				
+				found = true;
+			} else{
+				
+				tooBig = false;
+				i++;
+			}
+			
+		}
+		
+		return i;
+	}
+	
+
+}
